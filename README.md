@@ -6,7 +6,7 @@
 
 ## Demo
 
-https://github.com/umeshchandra-k/GRU-Protein-Sequence-Generator/raw/main/gui_output/demo.mp4
+[![Demo Video](https://img.shields.io/badge/Watch-Demo-blue)](https://github.com/umeshchandra-k/GRU-Protein-Sequence-Generator/issues/1)
 ---
 
 ## Features
@@ -197,11 +197,11 @@ Predicts the 3D structure of a given sequence using ESMFold.
 | Format | FASTA |
 | Filter | No stop codons (`*`), standard amino acids only |
 
-> ⚠️ The `.fasta` file is ~40MB and excluded from version tracking via `.gitignore`. Download it from [UniProt Human Proteome](https://www.uniprot.org/proteomes/UP000005640).
+> Dataset file is in gui_output\data\dataset.fasta
 
 ---
 
-## 📄 License
+## License
 
 This project is for academic/educational purposes.
 Dataset sourced from [UniProtKB](https://www.uniprot.org/) under their public data license.
