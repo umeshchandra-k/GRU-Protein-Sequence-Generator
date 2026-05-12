@@ -163,7 +163,7 @@ The app exposes two backend endpoints:
 | Format | FASTA |
 | Filter | No stop codons (`*`), standard amino acids only |
 
-> Dataset file is in gui_output\data\dataset.fasta
+Dataset file is in gui_output\data\dataset.fasta
 
 ---
 
