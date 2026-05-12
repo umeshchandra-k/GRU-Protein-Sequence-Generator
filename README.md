@@ -5,9 +5,8 @@
 ---
 
 ## 🎬 Demo
-https://github.com/umeshchandra-k/GRU-Protein-Sequence-Generator/issues/1#issue-4429343947
+<video src="[demo.mp4](https://github.com/umeshchandra-k/GRU-Protein-Sequence-Generator/issues/1#issue-4429343947)" autoplay muted loop playsinline></video>
 ---
-## abstract 
 
 ## ✨ Features
 
