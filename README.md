@@ -5,7 +5,7 @@
 ---
 
 ## 🎬 Demo
-<video src="[demo.mp4](https://github.com/umeshchandra-k/GRU-Protein-Sequence-Generator/issues/1#issue-4429343947)" autoplay muted loop playsinline></video>
+![Demo Video](https://github.com/umeshchandra-k/GRU-Protein-Sequence-Generator/issues/1#issue-4429343947)
 ---
 
 ## ✨ Features
@@ -66,7 +66,7 @@ protein-sequence-generator/
 
 ```bash
 # 1. Clone the repo
-git clone https://github.com/YOUR_USERNAME/protein-sequence-generator.git
+git clone https://github.com/umeshchandra-k/GRU-Protein-Sequence-Generator
 cd protein-sequence-generator
 
 # 2. Go into the app folder
