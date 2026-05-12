@@ -6,7 +6,7 @@
 
 ## Demo
 
-[![Demo Video](https://img.shields.io/badge/Watch-Demo-blue)](https://github.com/umeshchandra-k/GRU-Protein-Sequence-Generator/issues/1)
+[![Demo Video]([https://img.shields.io/badge/Watch-Demo-blue)](https://github.com/umeshchandra-k/GRU-Protein-Sequence-Generator/issues/1](https://github.com/umeshchandra-k/GRU-Protein-Sequence-Generator/issues/1#issue-4429343947))
 ---
 
 ## Features
@@ -147,46 +147,11 @@ Output: Probability distribution over next amino acid
 
 ## API Reference
 
-### `POST /generate`
-Generates and scores novel protein sequences.
+The app exposes two backend endpoints:
 
-**Request:**
-```json
-{
-  "n_proteins": 10,
-  "top_n": 3,
-  "temperature": 1.2
-}
-```
+/generate — accepts the number of proteins to generate, how many top results to return, and a temperature value to control creativity. Returns a ranked list of sequences with their biological scores and novelty similarity values.
 
-**Response:**
-```json
-{
-  "results": [
-    {
-      "rank": 1,
-      "sequence": "MKTAYIAKQRQISFVKSHFSRQ...",
-      "score": 8.5,
-      "similarity": 0.23
-    }
-  ]
-}
-```
-
-### `POST /fold`
-Predicts the 3D structure of a given sequence using ESMFold.
-
-**Request:**
-```json
-{ "sequence": "MKTAYIAKQRQISFVKSHFSRQ..." }
-```
-
-**Response:**
-```json
-{ "pdb": "HEADER ...\nATOM  ..." }
-```
-
----
+/fold — accepts a protein sequence and forwards it to the ESMFold API. Returns the predicted 3D structure as a PDB-format string, which is then rendered live in the browser using 3Dmol.js.
 
 ## Dataset
 
