@@ -5,8 +5,7 @@
 ---
 
 ## 🎬 Demo
-
-[![Watch Demo](gui_output/demo.gif)](gui_output/demo.mp4)
+https://github.com/umeshchandra-k/GRU-Protein-Sequence-Generator/blob/main/gui_output/demo.mp4
 ---
 
 ## ✨ Features
