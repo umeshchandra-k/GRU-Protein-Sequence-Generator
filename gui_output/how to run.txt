@@ -1,0 +1,11 @@
+## Setup 
+1. cd gui_output
+1. pip install -r requirements.txt
+
+## run
+3. python app.py
+4. Open browser:
+   http://localhost:5000
+
+## Notes
+- ESMFold API (api.esmatlas.com) requires internet connection

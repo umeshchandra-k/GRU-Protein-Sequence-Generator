@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ProteinGen — AI Protein Designer</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/3Dmol/2.0.4/3Dmol-min.js"></script>
+<style>
+  :root {
+    --bg:       #080c14;
+    --bg2:      #0d1422;
+    --bg3:      #111827;
+    --accent:   #00e5ff;
+    --accent2:  #7c3aed;
+    --green:    #10b981;
+    --red:      #ef4444;
+    --amber:    #f59e0b;
+    --text:     #e2e8f0;
+    --muted:    #64748b;
+    --border:   rgba(0,229,255,0.15);
+    --glow:     0 0 24px rgba(0,229,255,0.2);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Syne', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── grid bg ── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      linear-gradient(rgba(0,229,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,229,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── header ── */
+  header {
+    position: relative; z-index: 2;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 40px;
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(12px);
+  }
+  .logo {
+    font-size: 22px; font-weight: 800; letter-spacing: -0.5px;
+    color: var(--accent);
+    text-shadow: 0 0 20px rgba(0,229,255,0.5);
+  }
+  .logo span { color: var(--text); }
+  .badge {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px; color: var(--muted);
+    border: 1px solid var(--border);
+    padding: 4px 10px; border-radius: 20px;
+  }
+
+  /* ── main layout ── */
+  .container {
+    position: relative; z-index: 1;
+    max-width: 1100px; margin: 0 auto;
+    padding: 40px 24px;
+  }
+
+  /* ── hero ── */
+  .hero { margin-bottom: 48px; }
+  .hero h1 {
+    font-size: clamp(32px, 5vw, 56px);
+    font-weight: 800; line-height: 1.1;
+    letter-spacing: -1px;
+    margin-bottom: 12px;
+  }
+  .hero h1 em {
+    font-style: normal;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .hero p { color: var(--muted); font-size: 16px; max-width: 500px; }
+
+  /* ── control panel ── */
+  .panel {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px;
+    margin-bottom: 32px;
+    box-shadow: var(--glow);
+  }
+  .panel-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px; letter-spacing: 2px;
+    color: var(--accent); text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+
+  .controls {
+    display: grid; grid-template-columns: 1fr 1fr 1fr auto;
+    gap: 16px; align-items: end;
+  }
+  @media (max-width: 700px) {
+    .controls { grid-template-columns: 1fr 1fr; }
+    .btn-generate { grid-column: span 2; }
+  }
+
+  .field label {
+    display: block;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px; color: var(--muted);
+    letter-spacing: 1px; text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .field input[type=number], .field input[type=range] {
+    width: 100%;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-family: 'Space Mono', monospace;
+    font-size: 15px;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .field input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(0,229,255,0.1);
+  }
+  .field .range-row {
+    display: flex; align-items: center; gap: 10px;
+  }
+  .field input[type=range] {
+    padding: 0; border: none; background: transparent;
+    accent-color: var(--accent); cursor: pointer;
+  }
+  .field .range-val {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px; color: var(--accent);
+    min-width: 32px;
+  }
+
+  .btn-generate {
+    background: var(--accent);
+    color: var(--bg);
+    border: none; border-radius: 10px;
+    padding: 12px 28px;
+    font-family: 'Syne', sans-serif;
+    font-size: 15px; font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 0.3px;
+    transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
+    white-space: nowrap;
+  }
+  .btn-generate:hover { opacity: 0.88; box-shadow: 0 0 24px rgba(0,229,255,0.4); }
+  .btn-generate:active { transform: scale(0.97); }
+  .btn-generate:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  /* ── spinner ── */
+  .spinner {
+    display: none; align-items: center; gap: 12px;
+    font-family: 'Space Mono', monospace;
+    font-size: 13px; color: var(--muted);
+    margin-top: 20px;
+  }
+  .spinner.show { display: flex; }
+  .dot-pulse { display: flex; gap: 6px; }
+  .dot-pulse span {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--accent);
+    animation: pulse 1.2s ease-in-out infinite;
+  }
+  .dot-pulse span:nth-child(2) { animation-delay: 0.2s; }
+  .dot-pulse span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes pulse { 0%,80%,100%{transform:scale(0.6);opacity:0.3} 40%{transform:scale(1);opacity:1} }
+
+  /* ── results ── */
+  #results { display: none; }
+  .results-header {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px; color: var(--accent);
+    letter-spacing: 2px; text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+
+  .protein-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    margin-bottom: 20px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .protein-card:hover { border-color: rgba(0,229,255,0.35); }
+
+  .card-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 24px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    user-select: none;
+  }
+  .card-rank {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px; color: var(--muted);
+  }
+  .card-stats { display: flex; gap: 20px; align-items: center; }
+  .stat {
+    display: flex; flex-direction: column; align-items: flex-end;
+  }
+  .stat-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px; color: var(--muted); letter-spacing: 1px;
+  }
+  .stat-value {
+    font-family: 'Space Mono', monospace;
+    font-size: 15px; font-weight: 700; color: var(--accent);
+  }
+  .stat-value.sim { color: var(--green); }
+
+  .card-body { padding: 20px 24px; }
+
+  /* ── sequence strip ── */
+  .seq-strip {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px; line-height: 1.6;
+    letter-spacing: 2px;
+    word-break: break-all;
+    margin-bottom: 16px;
+    padding: 12px 16px;
+    background: var(--bg3);
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+  .aa-H { color: #f59e0b; }
+  .aa-P { color: #10b981; }
+  .aa-plus { color: #60a5fa; }
+  .aa-minus { color: #f87171; }
+  .aa-O { color: #94a3b8; }
+
+  /* ── fold button ── */
+  .btn-fold {
+    background: transparent;
+    border: 1px solid var(--accent2);
+    color: var(--accent2);
+    border-radius: 8px;
+    padding: 8px 18px;
+    font-family: 'Syne', sans-serif;
+    font-size: 13px; font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+  }
+  .btn-fold:hover { background: var(--accent2); color: #fff; }
+  .btn-fold:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  /* ── 3D viewer ── */
+  .viewer-wrap {
+    display: none;
+    margin-top: 16px;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid rgba(124,58,237,0.3);
+    position: relative;
+  }
+  .viewer-wrap.show { display: block; }
+  .viewer-wrap .loading-3d {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--bg3);
+    font-family: 'Space Mono', monospace;
+    font-size: 12px; color: var(--muted);
+    z-index: 10;
+  }
+  .viewer-wrap .loading-3d.hidden { display: none; }
+
+  /* ── legend ── */
+  .legend {
+    display: flex; gap: 16px; flex-wrap: wrap;
+    margin-top: 10px;
+  }
+  .legend-item {
+    display: flex; align-items: center; gap: 6px;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px; color: var(--muted);
+  }
+  .legend-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+  }
+
+  /* ── error ── */
+  .error-msg {
+    display: none;
+    background: rgba(239,68,68,0.1);
+    border: 1px solid rgba(239,68,68,0.3);
+    border-radius: 10px;
+    padding: 14px 20px;
+    font-family: 'Space Mono', monospace;
+    font-size: 12px; color: var(--red);
+    margin-top: 16px;
+  }
+  .error-msg.show { display: block; }
+
+  /* ── footer ── */
+  footer {
+    position: relative; z-index: 1;
+    text-align: center; padding: 32px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px; color: var(--muted);
+    border-top: 1px solid var(--border);
+    margin-top: 60px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Protein<span>Gen</span></div>
+  <div class="badge">LSTM · ESMFold · 3Dmol</div>
+</header>
+
+<div class="container">
+
+  <div class="hero">
+    <h1>AI Protein<br><em>Sequence Designer</em></h1>
+    <p>Generate novel protein sequences, then fold and visualize them in 3D.</p>
+  </div>
+
+  <!-- Control Panel -->
+  <div class="panel">
+    <div class="panel-title">// Generation Parameters</div>
+    <div class="controls">
+
+      <div class="field">
+        <label>Proteins to generate</label>
+        <input type="number" id="n-proteins" value="20" min="1" max="50"/>
+      </div>
+
+      <div class="field">
+        <label>Show top N results</label>
+        <input type="number" id="top-n" value="3" min="1" max="10"/>
+      </div>
+
+      <button class="btn-generate" id="gen-btn" onclick="generate()">Generate →</button>
+    </div>
+
+    <div class="spinner" id="spinner">
+      <div class="dot-pulse"><span></span><span></span><span></span></div>
+      <span id="spinner-msg">Generating sequences...</span>
+    </div>
+    <div class="error-msg" id="error-msg"></div>
+  </div>
+
+  <!-- Results -->
+  <div id="results">
+    <div class="results-header" id="results-header">// Top Results</div>
+    <div id="cards"></div>
+
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div>Hydrophobic</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#60a5fa"></div>Positive (+)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#f87171"></div>Negative (−)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#10b981"></div>Polar</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#94a3b8"></div>Other</div>
+    </div>
+  </div>
+
+</div>
+
+<footer>Protein sequence generation · ESMFold structure prediction</footer>
+
+<script>
+const HYDROPHOBIC  = new Set([...'AILMFWV']);
+const CHARGED_POS  = new Set([...'KR']);
+const CHARGED_NEG  = new Set([...'DE']);
+const POLAR        = new Set([...'NQSTHY']);
+
+function colorAA(aa) {
+  if (HYDROPHOBIC.has(aa))  return 'aa-H';
+  if (CHARGED_POS.has(aa))  return 'aa-plus';
+  if (CHARGED_NEG.has(aa))  return 'aa-minus';
+  if (POLAR.has(aa))        return 'aa-P';
+  return 'aa-O';
+}
+
+function renderSeq(seq) {
+  return [...seq].map(aa =>
+    `<span class="${colorAA(aa)}">${aa}</span>`
+  ).join('');
+}
+
+async function generate() {
+  const btn      = document.getElementById('gen-btn');
+  const spinner  = document.getElementById('spinner');
+  const errEl    = document.getElementById('error-msg');
+  const spinMsg  = document.getElementById('spinner-msg');
+  const nP       = parseInt(document.getElementById('n-proteins').value);
+  const topN     = parseInt(document.getElementById('top-n').value);
+  const temp = 1.0; 
+
+  btn.disabled   = true;
+  spinner.classList.add('show');
+  errEl.classList.remove('show');
+  document.getElementById('results').style.display = 'none';
+  spinMsg.textContent = `Generating ${nP} sequences…`;
+
+  try {
+    const resp = await fetch('/generate', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({n_proteins: nP, top_n: topN, temperature: temp})
+    });
+
+    if (!resp.ok) throw new Error(`Server error ${resp.status}`);
+    const data = await resp.json();
+    renderResults(data.results);
+
+  } catch (e) {
+    errEl.textContent = `Error: ${e.message}`;
+    errEl.classList.add('show');
+  } finally {
+    btn.disabled = false;
+    spinner.classList.remove('show');
+  }
+}
+
+function renderResults(results) {
+  const cards = document.getElementById('cards');
+  cards.innerHTML = '';
+
+  document.getElementById('results-header').textContent =
+    `// Top ${results.length} Proteins`;
+
+  results.forEach(r => {
+    const card = document.createElement('div');
+    card.className = 'protein-card';
+    card.innerHTML = `
+      <div class="card-header" onclick="toggleCard(this)">
+        <div class="card-rank">PROTEIN #${r.rank}</div>
+        <div class="card-stats">
+          <div class="stat">
+            <span class="stat-label">SCORE</span>
+            <span class="stat-value">${r.score}</span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">NOVELTY</span>
+            <span class="stat-value sim">${(1 - r.similarity).toFixed(3)}</span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">LENGTH</span>
+            <span class="stat-value" style="color:var(--muted)">${r.sequence.length}</span>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="seq-strip">${renderSeq(r.sequence)}</div>
+        <button class="btn-fold" onclick="fold(this, '${r.sequence}', ${r.rank})">
+          Fold &amp; View 3D →
+        </button>
+        <div class="viewer-wrap" id="viewer-${r.rank}">
+          <div class="loading-3d" id="loading-${r.rank}">Contacting ESMFold API…</div>
+          <div id="mol-${r.rank}" style="width:100%;height:420px"></div>
+        </div>
+      </div>`;
+    cards.appendChild(card);
+  });
+
+  document.getElementById('results').style.display = 'block';
+}
+
+function toggleCard(header) {
+  const body = header.nextElementSibling;
+  body.style.display = body.style.display === 'none' ? '' : 'none';
+}
+
+async function fold(btn, seq, rank) {
+  btn.disabled = true;
+  btn.textContent = 'Folding…';
+
+  const wrap    = document.getElementById(`viewer-${rank}`);
+  const loadEl  = document.getElementById(`loading-${rank}`);
+  wrap.classList.add('show');
+  loadEl.classList.remove('hidden');
+
+  try {
+    const resp = await fetch('/fold', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({sequence: seq})
+    });
+
+    if (!resp.ok) throw new Error('Folding API failed');
+    const data = await resp.json();
+
+    loadEl.classList.add('hidden');
+
+    const container = document.getElementById(`mol-${rank}`);
+    const viewer    = $3Dmol.createViewer(container, {
+      backgroundColor: '#0d1422'
+    });
+    viewer.addModel(data.pdb, 'pdb');
+    viewer.setStyle({}, {cartoon: {colorscheme: 'ssJmol'}});
+    viewer.addSurface($3Dmol.SurfaceType.SAS, {
+      opacity: 0.12,
+      colorscheme: 'whiteCarbon'
+    });
+    viewer.zoomTo();
+    viewer.render();
+    btn.textContent = '3D Loaded ✓';
+
+  } catch (e) {
+    loadEl.textContent = `Error: ${e.message}`;
+    btn.textContent = 'Fold & View 3D →';
+    btn.disabled = false;
+  }
+}
+</script>
+</body>
+</html>
