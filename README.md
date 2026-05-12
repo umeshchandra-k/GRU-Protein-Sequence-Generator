@@ -6,10 +6,7 @@
 
 ## 🎬 Demo
 
-https://github.com/YOUR_USERNAME/protein-sequence-generator/assets/YOUR_USER_ID/demo.mp4
-
-> *Generate → Score → Fold → Visualize — all in one interface.*
-
+[![Watch Demo](gui_output/demo.gif)](gui_output/demo.mp4)
 ---
 
 ## ✨ Features
@@ -204,24 +201,6 @@ Predicts the 3D structure of a given sequence using ESMFold.
 
 ---
 
-## 🔮 Future Improvements
-
-- [ ] Upgrade to Transformer-based model for higher sequence quality
-- [ ] Show pLDDT confidence score from ESMFold alongside 3D structure
-- [ ] BLAST similarity search against known proteins
-- [ ] Export generated sequences as `.fasta` files
-- [ ] Docker containerization for one-command deployment
-- [ ] Unit tests for scoring and generation functions
-
----
-
-## 👤 Author
-
-**Your Name**
-- GitHub: [@YOUR_USERNAME](https://github.com/YOUR_USERNAME)
-
----
-
 ## 📄 License
 
 This project is for academic/educational purposes.
@@ -229,4 +208,4 @@ Dataset sourced from [UniProtKB](https://www.uniprot.org/) under their public da
 
 ---
 
-*Built as a Major Project — Batch 24*
+*Built as a Major Project*
