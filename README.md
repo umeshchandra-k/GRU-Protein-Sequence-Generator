@@ -4,23 +4,24 @@
 
 ---
 
-## 🎬 Demo
-<video src="https://github.com/umeshchandra-k/GRU-Protein-Sequence-Generator/issues/1#issue-4429343947" autoplay muted loop playsinline></video>
+## Demo
+
+https://github.com/umeshchandra-k/GRU-Protein-Sequence-Generator/raw/main/gui_output/demo.mp4
 ---
 
-## ✨ Features
+## Features
 
 | Feature | Description |
 |---|---|
-| 🤖 AI Sequence Generation | GRU language model generates novel protein sequences from a mutated seed |
-| 🧪 Biological Scoring | Custom scoring for length, diversity, hydrophobicity, and charge balance |
-| 🔄 Novelty Check | Compares generated sequences against the real dataset to ensure originality |
-| 🌐 3D Structure Prediction | Integrates with ESMFold API to predict 3D protein structure |
-| 🖥️ Interactive Web UI | Dark-themed Flask app with live 3D viewer powered by 3Dmol.js |
+| AI Sequence Generation | GRU language model generates novel protein sequences from a mutated seed |
+| Biological Scoring | Custom scoring for length, diversity, hydrophobicity, and charge balance |
+| Novelty Check | Compares generated sequences against the real dataset to ensure originality |
+| 3D Structure Prediction | Integrates with ESMFold API to predict 3D protein structure |
+| Interactive Web UI | Dark-themed Flask app with live 3D viewer powered by 3Dmol.js |
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 protein-sequence-generator/
@@ -42,7 +43,7 @@ protein-sequence-generator/
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 | Layer | Tools |
 |---|---|
@@ -54,7 +55,7 @@ protein-sequence-generator/
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 
@@ -87,7 +88,7 @@ http://localhost:5000
 
 ---
 
-## ⚙️ How It Works
+## How It Works
 
 ```
 Human Proteome (FASTA)
@@ -115,15 +116,15 @@ Human Proteome (FASTA)
 
 The `score_protein()` function evaluates each sequence on:
 
-- ✅ **Length** — ideal range is 95–105 amino acids
-- ✅ **Diversity** — penalizes sequences dominated by one amino acid (>30%)
-- ✅ **Hydrophobicity** — target ~45% hydrophobic residues (`AILMFWV`)
-- ✅ **Charge Balance** — charged residues (`KRDE`) should be 10–30%
-- ❌ **Repeat Penalty** — long repeats like `LLLLLL` are penalized
+- **Length** — ideal range is 95–105 amino acids
+- **Diversity** — penalizes sequences dominated by one amino acid (>30%)
+- **Hydrophobicity** — target ~45% hydrophobic residues (`AILMFWV`)
+- **Charge Balance** — charged residues (`KRDE`) should be 10–30%
+- **Repeat Penalty** — long repeats like `LLLLLL` are penalized
 
 ---
 
-## 🧠 Model Architecture
+## Model Architecture
 
 ```
 Input: 30-character amino acid window
@@ -144,7 +145,7 @@ Output: Probability distribution over next amino acid
 
 ---
 
-## 🌐 API Reference
+## API Reference
 
 ### `POST /generate`
 Generates and scores novel protein sequences.
@@ -187,7 +188,7 @@ Predicts the 3D structure of a given sequence using ESMFold.
 
 ---
 
-## 📊 Dataset
+## Dataset
 
 | Property | Value |
 |---|---|
