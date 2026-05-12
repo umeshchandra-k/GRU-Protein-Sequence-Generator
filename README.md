@@ -1,12 +1,12 @@
 # ProteinGen — AI Protein Designer
 
-> A deep learning–powered web app that generates novel protein sequences using a GRU-based language model trained on the Human Proteome, scores them for biological plausibility, and predicts their 3D structure via the ESMFold API.
+A deep learning–powered web app that generates novel protein sequences using a GRU-based language model trained on the Human Proteome, scores them for biological plausibility, and predicts their 3D structure via the ESMFold API.
 
 ---
 
 ## Demo
 
-[![Demo Video](https://img.shields.io/badge/Watch-Demo-blue)](https://github.com/user-attachments/assets/b35d6c8c-ec0f-49fd-8292-ce33ab8f4d5f)
+[![Demo Video](https://img.shields.io/badge/Watch-Demo-blue)](https://github.com/umeshchandra-k/GRU-Protein-Sequence-Generator/issues/1)
 ---
 
 ## Features
