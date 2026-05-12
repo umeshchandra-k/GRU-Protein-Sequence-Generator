@@ -1,52 +1,232 @@
-# AI-Guided Synthetic Protein Sequence Generation for Functional Protein Design Using GRU
+# 🧬 ProteinGen — AI Protein Designer
 
-A lightweight deep learning framework for generating biologically plausible synthetic protein sequences using Gated Recurrent Units (GRUs), physicochemical scoring, novelty assessment, and ESMFold-based 3D structure prediction.
-
----
-
-# Abstract
-
-Designing biologically plausible protein sequences from first principles remains a major challenge due to the immense combinatorial complexity of protein sequence space. This project presents a lightweight end-to-end artificial intelligence framework for synthetic protein sequence generation using a character-level Gated Recurrent Unit (GRU) model trained on UniProtKB protein datasets.
-
-The proposed pipeline integrates autoregressive sequence generation, temperature-controlled sampling, sequence mutation, physicochemical scoring, novelty assessment, and ESMFold-based three-dimensional structure prediction within a unified framework. The GRU architecture consists of a 64-dimensional embedding layer, 128 hidden units, and a Softmax output layer trained using sparse categorical cross-entropy and the Adam optimizer.
-
-Experimental results demonstrate that the framework generates diverse and biologically plausible protein-like sequences with quality scores ranging from 6.1 to 6.4 and novelty similarity values between 0.13 and 0.18, indicating low similarity to the training corpus. Predicted tertiary structures exhibit compact alpha-helical and mixed secondary-structure patterns with pLDDT confidence scores above 70, suggesting structurally feasible folding behavior.
-
-Despite requiring only approximately 78K trainable parameters and modest GPU resources, the framework achieves competitive sequence-generation performance while remaining computationally accessible for resource-constrained academic environments. This work highlights the potential of lightweight recurrent architectures for accelerating computational protein design, synthetic biology research, and AI-assisted biomolecular engineering.
-
-# Features
-
-- GRU-based protein sequence generation
-- UniProtKB FASTA dataset preprocessing
-- Temperature-based sequence sampling
-- Seed mutation strategy
-- Multi-criteria protein scoring
-- Sequence novelty analysis
-- ESMFold 3D structure prediction
-- Protein structure visualization
-- Lightweight and GPU-efficient architecture
+> A deep learning–powered web app that generates novel protein sequences using a GRU-based language model trained on the Human Proteome, scores them for biological plausibility, and predicts their 3D structure via the ESMFold API.
 
 ---
 
-# Project Architecture
+## 🎬 Demo
 
-```text
-UniProtKB Dataset
+https://github.com/YOUR_USERNAME/protein-sequence-generator/assets/YOUR_USER_ID/demo.mp4
+
+> *Generate → Score → Fold → Visualize — all in one interface.*
+
+---
+
+## ✨ Features
+
+| Feature | Description |
+|---|---|
+| 🤖 AI Sequence Generation | GRU language model generates novel protein sequences from a mutated seed |
+| 🧪 Biological Scoring | Custom scoring for length, diversity, hydrophobicity, and charge balance |
+| 🔄 Novelty Check | Compares generated sequences against the real dataset to ensure originality |
+| 🌐 3D Structure Prediction | Integrates with ESMFold API to predict 3D protein structure |
+| 🖥️ Interactive Web UI | Dark-themed Flask app with live 3D viewer powered by 3Dmol.js |
+
+---
+
+## 📁 Project Structure
+
+```
+protein-sequence-generator/
+│
+├── colab traning fie.ipynb          # Google Colab notebook — model training
+│
+└── gui_output/
+    ├── app.py                       # Flask backend (main entry point)
+    ├── requirements.txt             # Python dependencies
+    ├── how to run.txt               # Quick-start instructions
+    ├── demo.mp4                     # Demo video of the running app
+    ├── data/
+    │   └── dataset.fasta            # Human proteome dataset (UniProtKB)
+    ├── model/
+    │   └── model.keras              # Trained GRU model weights
+    └── templates/
+        └── index.html               # Frontend UI (dark theme + 3Dmol.js)
+```
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer | Tools |
+|---|---|
+| **ML Model** | TensorFlow / Keras (GRU), NumPy, BioPython |
+| **Web Backend** | Flask, Python 3.x |
+| **3D Folding** | ESMFold API (`api.esmatlas.com`) |
+| **3D Viewer** | 3Dmol.js |
+| **Dataset** | UniProtKB Human Proteome `UP000005640` |
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Python 3.8 or higher
+- pip
+- Internet connection *(required for ESMFold 3D folding)*
+
+### Installation & Run
+
+```bash
+# 1. Clone the repo
+git clone https://github.com/YOUR_USERNAME/protein-sequence-generator.git
+cd protein-sequence-generator
+
+# 2. Go into the app folder
+cd gui_output
+
+# 3. Install dependencies
+pip install -r requirements.txt
+
+# 4. Run the app
+python app.py
+```
+
+Then open your browser at:
+
+```
+http://localhost:5000
+```
+
+---
+
+## ⚙️ How It Works
+
+```
+Human Proteome (FASTA)
         ↓
-Data Preprocessing
+  Sequence Preprocessing
+  (filter standard amino acids, trim to 100 AA)
         ↓
-Character Tokenization
+  GRU Language Model Training   ← colab traning fie.ipynb
+  (Embedding → GRU(128) → Dense(vocab_size))
         ↓
-Sliding Window Generation
+  Sequence Generation
+  (seed from dataset + temperature sampling + mutation)
         ↓
-GRU Model Training
+  Biological Scoring
+  (length, diversity, hydrophobicity, charge)
         ↓
-Temperature-Based Sampling
+  Top-N Sequences Selected
         ↓
-Protein Sequence Generation
+  3D Structure Prediction via ESMFold API
         ↓
-Sequence Scoring & Filtering
-        ↓
-Novelty Assessment
-        ↓
-ESMFold 3D Structure Prediction# GRU-Protein-Sequence-Generator
+  Interactive 3D Visualization (3Dmol.js)
+```
+
+### Scoring Criteria
+
+The `score_protein()` function evaluates each sequence on:
+
+- ✅ **Length** — ideal range is 95–105 amino acids
+- ✅ **Diversity** — penalizes sequences dominated by one amino acid (>30%)
+- ✅ **Hydrophobicity** — target ~45% hydrophobic residues (`AILMFWV`)
+- ✅ **Charge Balance** — charged residues (`KRDE`) should be 10–30%
+- ❌ **Repeat Penalty** — long repeats like `LLLLLL` are penalized
+
+---
+
+## 🧠 Model Architecture
+
+```
+Input: 30-character amino acid window
+    ↓
+Embedding Layer  (vocab_size → 64 dims)
+    ↓
+GRU Layer        (128 hidden units)
+    ↓
+Dense Layer      (vocab_size units, softmax)
+    ↓
+Output: Probability distribution over next amino acid
+```
+
+**Training setup:**
+- Optimizer: Adam
+- Loss: Sparse Categorical Crossentropy
+- Callbacks: `EarlyStopping` (patience=5), `ModelCheckpoint` (saves best weights)
+
+---
+
+## 🌐 API Reference
+
+### `POST /generate`
+Generates and scores novel protein sequences.
+
+**Request:**
+```json
+{
+  "n_proteins": 10,
+  "top_n": 3,
+  "temperature": 1.2
+}
+```
+
+**Response:**
+```json
+{
+  "results": [
+    {
+      "rank": 1,
+      "sequence": "MKTAYIAKQRQISFVKSHFSRQ...",
+      "score": 8.5,
+      "similarity": 0.23
+    }
+  ]
+}
+```
+
+### `POST /fold`
+Predicts the 3D structure of a given sequence using ESMFold.
+
+**Request:**
+```json
+{ "sequence": "MKTAYIAKQRQISFVKSHFSRQ..." }
+```
+
+**Response:**
+```json
+{ "pdb": "HEADER ...\nATOM  ..." }
+```
+
+---
+
+## 📊 Dataset
+
+| Property | Value |
+|---|---|
+| Source | UniProtKB / Swiss-Prot |
+| Proteome ID | `UP000005640` (Human) |
+| Format | FASTA |
+| Filter | No stop codons (`*`), standard amino acids only |
+
+> ⚠️ The `.fasta` file is ~40MB and excluded from version tracking via `.gitignore`. Download it from [UniProt Human Proteome](https://www.uniprot.org/proteomes/UP000005640).
+
+---
+
+## 🔮 Future Improvements
+
+- [ ] Upgrade to Transformer-based model for higher sequence quality
+- [ ] Show pLDDT confidence score from ESMFold alongside 3D structure
+- [ ] BLAST similarity search against known proteins
+- [ ] Export generated sequences as `.fasta` files
+- [ ] Docker containerization for one-command deployment
+- [ ] Unit tests for scoring and generation functions
+
+---
+
+## 👤 Author
+
+**Your Name**
+- GitHub: [@YOUR_USERNAME](https://github.com/YOUR_USERNAME)
+
+---
+
+## 📄 License
+
+This project is for academic/educational purposes.
+Dataset sourced from [UniProtKB](https://www.uniprot.org/) under their public data license.
+
+---
+
+*Built as a Major Project — Batch 24*
