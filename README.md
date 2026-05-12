@@ -5,8 +5,9 @@
 ---
 
 ## 🎬 Demo
-[![Demo Video](./assets/demo.png)](https://github.com/umeshchandra-k/GRU-Protein-Sequence-Generator/issues/1#issue-4429343947)
+https://github.com/umeshchandra-k/GRU-Protein-Sequence-Generator/issues/1#issue-4429343947
 ---
+## abstract 
 
 ## ✨ Features
 
